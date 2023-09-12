@@ -1,3 +1,5 @@
+export type GameProgressionType = "time-based" | "move-based";
+
 export type GameModesType =
     | "time-limit" // A game mode where the game ends after a limited amount of time
     | "move-limit" // A game mode where the game ends after a limited numer of moves
@@ -13,8 +15,10 @@ export interface GameMoveType {
 }
 
 export interface GameControlSystemPropertiesType {
+    progression: GameProgressionType;
     score: number;
     mode: GameModesType[];
+    timeElapsed: number;
     movesMade?: number;
     moves?: GameMovesType<any>;
     options?: string[];
@@ -24,20 +28,30 @@ export interface GameControlSystemPropertiesType {
     hasStarted: boolean;
     gameStartTime: string | Date | undefined;
     gameEndTime: string | Date | undefined;
+    winCheckCallback?: () => boolean;
+    loseCheckCallback: () => boolean;
 }
 
 export interface GameControlSystemFunctionsType {
     startGame: () => void;
-    isPaused: () => boolean;
     pauseGame: () => void;
     unpauseGame: () => void;
+    endGame: () => void;
     incrementScore: (val: number) => void;
     decrementScore: (val: number) => void;
+    isPaused: () => boolean;
+    hasWon: () => boolean;
+    hasLost: () => boolean;
+    progressGame: () => void;
+    recordMove: () => void;
+    toggleOptionsVisibility: () => void;
 }
 
 class GameControlSystem implements GameControlSystemPropertiesType {
+    progression: GameProgressionType;
     score: number;
     mode: GameModesType[];
+    timeElapsed: number;
     isRunning: boolean;
     hasStarted: boolean;
     gameStartTime: string | Date | undefined;
@@ -47,10 +61,14 @@ class GameControlSystem implements GameControlSystemPropertiesType {
     options?: string[];
     isOptionsVisible?: boolean;
     moves: GameMovesType<any>;
+    winCheckCallback?: () => boolean;
+    loseCheckCallback: () => boolean;
 
     constructor({
+        progression,
         score,
         mode,
+        timeElapsed,
         isRunning,
         hasStarted,
         gameStartTime,
@@ -60,13 +78,20 @@ class GameControlSystem implements GameControlSystemPropertiesType {
         options,
         isOptionsVisible,
         moves,
+        winCheckCallback,
+        loseCheckCallback,
     }: GameControlSystemPropertiesType) {
+        this.progression = progression;
         this.score = score;
         this.mode = mode;
         this.isRunning = isRunning;
         this.hasStarted = hasStarted;
         this.gameStartTime = gameStartTime;
         this.gameEndTime = gameEndTime;
+        this.moves = moves ?? [];
+        this.timeElapsed = timeElapsed ?? 0;
+        this.winCheckCallback = winCheckCallback ?? (() => false);
+        this.loseCheckCallback = loseCheckCallback;
 
         if (speed) {
             this.speed = speed;
@@ -84,11 +109,10 @@ class GameControlSystem implements GameControlSystemPropertiesType {
         if (movesMade) {
             this.movesMade = movesMade;
         }
-
-        this.moves = moves ?? [];
     }
 
     isPaused: () => boolean = () => this.hasStarted && !this.isRunning;
+
     pauseGame: () => void = () => {
         if (this.hasStarted) {
             this.isRunning = false;
