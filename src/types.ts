@@ -18,16 +18,18 @@ export interface GameControlSystemPropertiesType {
     mode: GameModesType[];
     timeElapsed: number;
     movesMade?: number;
-    moves?: GameMoveType[];
+    gameHistory?: GameMoveType[];
     options?: string[];
     isOptionsVisible?: boolean;
-    speed?: number;
+    speed: number;
     isRunning: boolean;
     hasStarted: boolean;
     gameStartTime: string | Date | undefined;
     gameEndTime: string | Date | undefined;
-    winCheckCallback?: () => boolean;
+    winCheckCallback: () => boolean;
     loseCheckCallback: () => boolean;
+    gameStateCallback: () => any;
+    gameStateProgressionCallback: () => void;
 }
 
 export interface GameControlSystemFunctionsType {
@@ -35,13 +37,11 @@ export interface GameControlSystemFunctionsType {
     pauseGame: () => void;
     unpauseGame: () => void;
     endGame: () => void;
-    incrementScore: (val: number) => void;
-    decrementScore: (val: number) => void;
+    // incrementScore: (val: number) => void;
+    // decrementScore: (val: number) => void;
     isPaused: () => boolean;
-    hasWon: () => boolean;
-    hasLost: () => boolean;
     progressGame: () => void;
-    recordMove: () => void;
+    recordState: () => void;
     toggleOptionsVisibility: () => void;
 }
 

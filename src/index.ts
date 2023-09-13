@@ -3,7 +3,6 @@ import type {
     GameModesType,
     GameMoveType,
     GameControlSystemPropertiesType,
-    GameControlSystemFunctionsType,
     GameControlSystemType,
 } from "./types.ts";
 
@@ -16,13 +15,15 @@ class GameControlSystem implements GameControlSystemType {
     hasStarted: boolean;
     gameStartTime: string | Date | undefined;
     gameEndTime: string | Date | undefined;
-    speed?: number;
+    speed: number;
     movesMade?: number;
     options?: string[];
     isOptionsVisible?: boolean;
-    moves: GameMoveType[];
-    winCheckCallback?: () => boolean;
+    gameHistory: GameMoveType[];
+    winCheckCallback: () => boolean;
     loseCheckCallback: () => boolean;
+    gameStateCallback: () => any;
+    gameStateProgressionCallback: () => void;
 
     constructor({
         progression,
@@ -37,9 +38,11 @@ class GameControlSystem implements GameControlSystemType {
         movesMade,
         options,
         isOptionsVisible,
-        moves,
+        gameHistory,
         winCheckCallback,
         loseCheckCallback,
+        gameStateCallback,
+        gameStateProgressionCallback,
     }: GameControlSystemPropertiesType) {
         this.progression = progression;
         this.score = score;
@@ -48,14 +51,18 @@ class GameControlSystem implements GameControlSystemType {
         this.hasStarted = hasStarted;
         this.gameStartTime = gameStartTime;
         this.gameEndTime = gameEndTime;
-        this.moves = moves ?? [];
+        this.gameHistory = gameHistory ?? [];
         this.timeElapsed = timeElapsed ?? 0;
+        this.speed = speed ?? 0;
         this.winCheckCallback = winCheckCallback ?? (() => false);
         this.loseCheckCallback = loseCheckCallback;
+        this.gameStateCallback = gameStateCallback;
+        this.gameStateProgressionCallback = gameStateProgressionCallback;
 
-        if (speed) {
-            this.speed = speed;
-        }
+        if (this.progression === "time-based" && !speed)
+            throw new Error(
+                "Speed must be pass when game progression is time based"
+            );
 
         if (options) {
             this.options = options;
@@ -71,7 +78,13 @@ class GameControlSystem implements GameControlSystemType {
         }
     }
 
-    isPaused: () => boolean = () => this.hasStarted && !this.isRunning;
+    startGame: () => void = () => {
+        this.isRunning = true;
+        this.hasStarted = true;
+        this.isOptionsVisible = false;
+        this.gameStartTime = new Date();
+        this.progressGame();
+    };
 
     pauseGame: () => void = () => {
         if (this.hasStarted) {
@@ -82,6 +95,51 @@ class GameControlSystem implements GameControlSystemType {
     unpauseGame: () => void = () => {
         if (this.hasStarted) {
             this.isRunning = true;
+        }
+    };
+
+    isPaused: () => boolean = () => this.hasStarted && !this.isRunning;
+
+    progressGame: () => void = () => {
+        this.recordState();
+
+        if (
+            !this.hasStarted ||
+            !this.isRunning ||
+            this.loseCheckCallback() ||
+            this.winCheckCallback() ||
+            this.gameEndTime
+        ) {
+            this.endGame();
+            return;
+        }
+
+        this.gameStateProgressionCallback();
+
+        if (this.progression === "time-based") {
+            this.timeElapsed += this.speed;
+            setTimeout(() => {
+                this.progressGame();
+            }, this.speed);
+        }
+    };
+
+    recordState: () => void = () => {
+        this.gameHistory.push({
+            score: this.score,
+            moves: this.movesMade ?? 0,
+            gameState: this.gameStateCallback(),
+        });
+    };
+
+    toggleOptionsVisibility: () => void = () => {
+        this.isOptionsVisible = !this.isOptionsVisible;
+    };
+
+    endGame: () => void = () => {
+        if (this.gameEndTime) {
+            this.gameEndTime = new Date;
+            this.isRunning = false;
         }
     };
 }
