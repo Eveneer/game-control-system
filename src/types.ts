@@ -2,7 +2,7 @@ export type GameProgressionType = "time-based" | "move-based";
 
 export type GameModesType =
     | "time-limit" // A game mode where the game ends after a limited amount of time
-    | "move-limit" // A game mode where the game ends after a limited numer of moves
+    | "move-limit" // A game mode where the game ends after a limited number of moves
     | "score-rate" // A game mode where a score rate has to be maintained (scores per unit time)
     | "move-rate"; // A game mode where a move rate has to be maintained (moves per unit time)
 
