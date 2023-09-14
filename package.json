@@ -1,7 +1,7 @@
 {
     "name": "game-control-system",
     "version": "0.0.1",
-    "description": "",
+    "description": "A game control system for managing game states, scoring, and options.",
     "type": "module",
     "main": "dist/index.js",
     "types": "index.d.ts",
