@@ -4,12 +4,21 @@ import type {
     GameMoveType,
     GCSType,
     GCSConstructorObjectType,
+    GameLimitersType,
 } from "./types.ts";
+
+const gameLimiters: any = {
+    timeLimit: "time-limit",
+    moveLimit: "move-limit",
+    scoreRate: "score-rate",
+    moveRate: "move-rate",
+};
 
 class GCS implements GCSType {
     progression: GameProgressionType;
     score: number;
     mode: GameModesType[];
+    limiters: GameLimitersType;
     timeElapsed: number;
     isRunning: boolean;
     hasStarted: boolean;
@@ -27,34 +36,36 @@ class GCS implements GCSType {
 
     constructor({
         progression,
-        score,
-        mode,
-        timeElapsed,
+        score = 0,
+        limiters = {},
+        timeElapsed = 0,
         gameStartTime,
-        speed,
+        speed = 0,
         movesMade,
         options,
-        isOptionsVisible,
-        gameHistory,
-        winCheckCallback,
+        isOptionsVisible = false,
+        gameHistory = [],
+        winCheckCallback = () => false,
         loseCheckCallback,
         gameStateCallback,
         gameStateProgressionCallback,
     }: GCSConstructorObjectType) {
         this.progression = progression;
-        this.score = score ?? 0;
-        this.mode = mode;
+        this.score = score;
         this.isRunning = false;
         this.hasStarted = false;
         this.gameStartTime = gameStartTime;
         this.gameEndTime = undefined;
-        this.gameHistory = gameHistory ?? [];
-        this.timeElapsed = timeElapsed ?? 0;
-        this.speed = speed ?? 0;
-        this.winCheckCallback = winCheckCallback ?? (() => false);
+        this.gameHistory = gameHistory;
+        this.timeElapsed = timeElapsed;
+        this.speed = speed;
+        this.winCheckCallback = winCheckCallback;
         this.loseCheckCallback = loseCheckCallback;
         this.gameStateCallback = gameStateCallback;
         this.gameStateProgressionCallback = gameStateProgressionCallback;
+        this.limiters = limiters;
+        this.isOptionsVisible = isOptionsVisible;
+        let mode: GameModesType[] = [];
 
         if (this.progression === "time-based" && !speed)
             throw new Error(
@@ -63,16 +74,17 @@ class GCS implements GCSType {
 
         if (options) {
             this.options = options;
-            this.isOptionsVisible = isOptionsVisible ?? false;
-        }
-
-        if (isOptionsVisible) {
-            this.isOptionsVisible = isOptionsVisible;
         }
 
         if (movesMade) {
             this.movesMade = movesMade;
         }
+
+        Object.keys(limiters).forEach((limiter) => {
+            mode.push(gameLimiters[limiter]);
+        });
+
+        this.mode = mode;
     }
 
     startGame: () => void = () => {

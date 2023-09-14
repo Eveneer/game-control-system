@@ -13,9 +13,17 @@ export interface GameMoveType {
     gameState: any;
 }
 
+export interface GameLimitersType {
+    timeLimit?: number;
+    moveLimit?: number;
+    scoreRate?: number;
+    moveRate?: number;
+}
+
 export interface GCSPropertiesType {
     progression: GameProgressionType;
     score: number;
+    limiters: GameLimitersType;
     mode: GameModesType[];
     timeElapsed: number;
     movesMade?: number;
@@ -48,8 +56,8 @@ export interface GCSFunctionsType {
 
 export interface GCSConstructorObjectType {
     progression: GameProgressionType;
-    mode: GameModesType[];
     score?: number;
+    limiters: GameLimitersType;
     timeElapsed?: number;
     movesMade?: number;
     gameHistory?: GameMoveType[];
