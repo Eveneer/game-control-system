@@ -6,9 +6,9 @@ import type {
     GCSConstructorObjectType,
     GameLimitersType,
 } from "./types";
-import { gcsInstantiationMixin } from "./gcsInstantiationMixin";
-import { gcsFunctionalitiesMixin } from "./gcsFunctionalitiesMixin";
-import { gcsSettersMixin } from "./gcsSettersMixin";
+// import { gcsInstantiationMixin } from "./gcsInstantiationMixin";
+// import { gcsFunctionalitiesMixin } from "./gcsFunctionalitiesMixin";
+// import { gcsSettersMixin } from "./gcsSettersMixin";
 
 const gameLimiters: any = {
     timeLimit: "time-limit",
