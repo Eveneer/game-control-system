@@ -18,24 +18,24 @@ const gameLimiters: any = {
 };
 
 class GCS implements GCSType {
-    private progression: GameProgressionType;
-    private score: number;
-    private mode: GameModesType[];
-    private limiters: GameLimitersType;
-    private timeElapsed: number;
-    private isRunning: boolean;
-    private hasStarted: boolean;
-    private gameStartTime: string | Date | undefined;
-    private gameEndTime: string | Date | undefined;
-    private speed: number;
-    private movesMade?: number;
-    private options?: string[];
-    private isOptionsVisible?: boolean;
-    private gameHistory: GameMoveType[];
-    private winCheckCallback: () => boolean;
-    private loseCheckCallback: () => boolean;
-    private gameStateCallback: () => any;
-    private gameStateProgressionCallback: () => void;
+    protected progression: GameProgressionType;
+    protected score: number;
+    protected mode: GameModesType[];
+    protected limiters: GameLimitersType;
+    protected timeElapsed: number;
+    protected isRunning: boolean;
+    protected hasStarted: boolean;
+    protected gameStartTime: string | Date | undefined;
+    protected gameEndTime: string | Date | undefined;
+    protected speed: number;
+    protected movesMade?: number;
+    protected options?: string[];
+    protected isOptionsVisible?: boolean;
+    protected gameHistory: GameMoveType[];
+    protected winCheckCallback: () => boolean;
+    protected loseCheckCallback: () => boolean;
+    protected gameStateCallback: () => any;
+    protected gameStateProgressionCallback: () => void;
 
     constructor({
         progression,
