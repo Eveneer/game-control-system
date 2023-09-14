@@ -2,11 +2,11 @@ import type {
     GameProgressionType,
     GameModesType,
     GameMoveType,
-    GameControlSystemPropertiesType,
-    GameControlSystemType,
+    GCSType,
+    GCSConstructorObjectType,
 } from "./types.ts";
 
-class GameControlSystem implements GameControlSystemType {
+class GCS implements GCSType {
     progression: GameProgressionType;
     score: number;
     mode: GameModesType[];
@@ -30,10 +30,7 @@ class GameControlSystem implements GameControlSystemType {
         score,
         mode,
         timeElapsed,
-        isRunning,
-        hasStarted,
         gameStartTime,
-        gameEndTime,
         speed,
         movesMade,
         options,
@@ -43,14 +40,14 @@ class GameControlSystem implements GameControlSystemType {
         loseCheckCallback,
         gameStateCallback,
         gameStateProgressionCallback,
-    }: GameControlSystemPropertiesType) {
+    }: GCSConstructorObjectType) {
         this.progression = progression;
-        this.score = score;
+        this.score = score ?? 0;
         this.mode = mode;
-        this.isRunning = isRunning;
-        this.hasStarted = hasStarted;
+        this.isRunning = false;
+        this.hasStarted = false;
         this.gameStartTime = gameStartTime;
-        this.gameEndTime = gameEndTime;
+        this.gameEndTime = undefined;
         this.gameHistory = gameHistory ?? [];
         this.timeElapsed = timeElapsed ?? 0;
         this.speed = speed ?? 0;
@@ -100,9 +97,7 @@ class GameControlSystem implements GameControlSystemType {
 
     isPaused: () => boolean = () => this.hasStarted && !this.isRunning;
 
-    progressGame: () => void = () => {
-        this.recordState();
-
+    progressGame: () => boolean = () => {
         if (
             !this.hasStarted ||
             !this.isRunning ||
@@ -111,22 +106,19 @@ class GameControlSystem implements GameControlSystemType {
             this.gameEndTime
         ) {
             this.endGame();
-            return;
+            return false;
         }
 
         this.gameStateProgressionCallback();
+        this.recordState();
 
-        if (this.progression === "time-based") {
-            this.timeElapsed += this.speed;
-            setTimeout(() => {
-                this.progressGame();
-            }, this.speed);
-        }
+        return true;
     };
 
     recordState: () => void = () => {
         this.gameHistory.push({
             score: this.score,
+            time: new Date(),
             moves: this.movesMade ?? 0,
             gameState: this.gameStateCallback(),
         });
@@ -138,10 +130,10 @@ class GameControlSystem implements GameControlSystemType {
 
     endGame: () => void = () => {
         if (this.gameEndTime) {
-            this.gameEndTime = new Date;
+            this.gameEndTime = new Date();
             this.isRunning = false;
         }
     };
 }
 
-export default GameControlSystem;
+export default GCS;

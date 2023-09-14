@@ -9,10 +9,11 @@ export type GameModesType =
 export interface GameMoveType {
     score: number;
     moves: number;
+    time: Date;
     gameState: any;
 }
 
-export interface GameControlSystemPropertiesType {
+export interface GCSPropertiesType {
     progression: GameProgressionType;
     score: number;
     mode: GameModesType[];
@@ -32,7 +33,7 @@ export interface GameControlSystemPropertiesType {
     gameStateProgressionCallback: () => void;
 }
 
-export interface GameControlSystemFunctionsType {
+export interface GCSFunctionsType {
     startGame: () => void;
     pauseGame: () => void;
     unpauseGame: () => void;
@@ -40,11 +41,26 @@ export interface GameControlSystemFunctionsType {
     // incrementScore: (val: number) => void;
     // decrementScore: (val: number) => void;
     isPaused: () => boolean;
-    progressGame: () => void;
+    progressGame: () => boolean;
     recordState: () => void;
     toggleOptionsVisibility: () => void;
 }
 
-export interface GameControlSystemType
-    extends GameControlSystemPropertiesType,
-        GameControlSystemFunctionsType {}
+export interface GCSConstructorObjectType {
+    progression: GameProgressionType;
+    mode: GameModesType[];
+    score?: number;
+    timeElapsed?: number;
+    movesMade?: number;
+    gameHistory?: GameMoveType[];
+    options?: string[];
+    isOptionsVisible?: boolean;
+    speed?: number;
+    gameStartTime?: string | Date | undefined;
+    winCheckCallback: () => boolean;
+    loseCheckCallback: () => boolean;
+    gameStateCallback: () => any;
+    gameStateProgressionCallback: () => void;
+}
+
+export interface GCSType extends GCSPropertiesType, GCSFunctionsType {}
