@@ -1,6 +1,6 @@
 {
     "name": "game-control-system",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "A game control system for managing game states, scoring, and options.",
     "type": "module",
     "main": "dist/index.js",
@@ -13,7 +13,8 @@
     ],
     "scripts": {
         "test": "jest",
-        "build": "tsc"
+        "build": "tsc",
+        "pub": "tsc | npm publish"
     },
     "keywords": [],
     "author": "",
