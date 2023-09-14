@@ -5,6 +5,12 @@
     "type": "module",
     "main": "dist/index.js",
     "types": "index.d.ts",
+    "files": [
+        "dist",
+        "LICENSE",
+        "README.md",
+        "package.json"
+    ],
     "scripts": {
         "test": "jest",
         "build": "tsc"
