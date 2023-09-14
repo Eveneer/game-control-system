@@ -48,7 +48,7 @@ The `GCSConstructorObjectType` has the following keys:
     -   **Indicates all previous game states, optional param, should be provided if a game is being resumed**
 
     ```ts
-    GameMoveType {
+    interface GameMoveType {
         score: number;
         moves: number;
         time: Date;
