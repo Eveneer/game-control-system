@@ -33,8 +33,8 @@ export interface GCSPropertiesType {
     speed: number;
     isRunning: boolean;
     hasStarted: boolean;
-    gameStartTime: string | Date | undefined;
-    gameEndTime: string | Date | undefined;
+    gameStartTime: Date | undefined;
+    gameEndTime: Date | undefined;
     winCheckCallback: () => boolean;
     loseCheckCallback: () => boolean;
     gameStateCallback: () => any;
@@ -52,6 +52,24 @@ export interface GCSFunctionsType {
     progressGame: () => boolean;
     recordState: () => void;
     toggleOptionsVisibility: () => void;
+    hasGameEnded: () => boolean;
+}
+
+export interface GCSGetterFuncstionsType {
+    getProgression: () => GameProgressionType;
+    getScore: () => number;
+    getMode: () => GameLimitersType;
+    getLimiters: () => GameModesType[];
+    getTimeElapsed: () => number;
+    getIsRunning: () => number;
+    getHasStarted: () => GameMoveType[];
+    getGameStartTime: () => string[];
+    getGameEndTime: () => boolean;
+    getSpeed: () => number;
+    getMovesMade: () => boolean;
+    getOptions: () => boolean;
+    getIsOptionsVisible: () => Date | undefined;
+    getGameHistory: () => Date | undefined;
 }
 
 export interface GCSConstructorObjectType {
@@ -71,4 +89,4 @@ export interface GCSConstructorObjectType {
     gameStateProgressionCallback: () => void;
 }
 
-export interface GCSType extends GCSPropertiesType, GCSFunctionsType {}
+export interface GCSType extends GCSFunctionsType {}

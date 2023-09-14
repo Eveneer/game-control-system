@@ -5,7 +5,10 @@ import type {
     GCSType,
     GCSConstructorObjectType,
     GameLimitersType,
-} from "./types.ts";
+} from "./types";
+import { gcsInstantiationMixin } from "./gcsInstantiationMixin";
+import { gcsFunctionalitiesMixin } from "./gcsFunctionalitiesMixin";
+import { gcsSettersMixin } from "./gcsSettersMixin";
 
 const gameLimiters: any = {
     timeLimit: "time-limit",
@@ -15,24 +18,24 @@ const gameLimiters: any = {
 };
 
 class GCS implements GCSType {
-    progression: GameProgressionType;
-    score: number;
-    mode: GameModesType[];
-    limiters: GameLimitersType;
-    timeElapsed: number;
-    isRunning: boolean;
-    hasStarted: boolean;
-    gameStartTime: string | Date | undefined;
-    gameEndTime: string | Date | undefined;
-    speed: number;
-    movesMade?: number;
-    options?: string[];
-    isOptionsVisible?: boolean;
-    gameHistory: GameMoveType[];
-    winCheckCallback: () => boolean;
-    loseCheckCallback: () => boolean;
-    gameStateCallback: () => any;
-    gameStateProgressionCallback: () => void;
+    private progression: GameProgressionType;
+    private score: number;
+    private mode: GameModesType[];
+    private limiters: GameLimitersType;
+    private timeElapsed: number;
+    private isRunning: boolean;
+    private hasStarted: boolean;
+    private gameStartTime: string | Date | undefined;
+    private gameEndTime: string | Date | undefined;
+    private speed: number;
+    private movesMade?: number;
+    private options?: string[];
+    private isOptionsVisible?: boolean;
+    private gameHistory: GameMoveType[];
+    private winCheckCallback: () => boolean;
+    private loseCheckCallback: () => boolean;
+    private gameStateCallback: () => any;
+    private gameStateProgressionCallback: () => void;
 
     constructor({
         progression,
@@ -85,6 +88,15 @@ class GCS implements GCSType {
         });
 
         this.mode = mode;
+
+        // Object.assign(
+        //     this,
+        //     gcsInstantiationMixin,
+        //     gcsFunctionalitiesMixin,
+        //     gcsSettersMixin
+        // );
+
+        // gcsInstantiationMixin.instanciate(param);
     }
 
     startGame: () => void = () => {
@@ -146,6 +158,10 @@ class GCS implements GCSType {
             this.isRunning = false;
         }
     };
+
+    hasGameEnded: () => boolean = () =>
+        this.hasStarted &&
+        (this.winCheckCallback() || this.loseCheckCallback());
 }
 
 export default GCS;
