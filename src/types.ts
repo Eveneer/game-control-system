@@ -64,7 +64,15 @@ export interface GCSGetterFuncstionsType {
     getProgression: () => GameProgressionType;
     getScore: () => number;
     getMode: () => GameModesType[];
+    getIsTimeLimited: () => boolean;
+    getIsMoveLimited: () => boolean;
+    getIsScoreRateLimited: () => boolean;
+    getIsMoveRateLimited: () => boolean;
     getLimiters: () => GameLimitersType;
+    getTimeLimit: () => number | false;
+    getMoveLimit: () => number | false;
+    getScoreRateLimit: () => GameRateLimiterType | false;
+    getMoveRateLimit: () => GameRateLimiterType | false;
     getTimeElapsed: () => number;
     getIsRunning: () => boolean;
     getHasStarted: () => boolean;

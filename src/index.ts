@@ -5,6 +5,7 @@ import type {
     GCSType,
     GCSConstructorObjectType,
     GameLimitersType,
+    GameRateLimiterType,
 } from "./types";
 
 const gameLimiters: any = {
@@ -153,18 +154,50 @@ class GCS implements GCSType {
 
     // Object getters
     getProgression: () => GameProgressionType = () => this.progression;
+
     getScore: () => number = () => this.score;
+
     getMode: () => GameModesType[] = () => this.mode;
+
+    getIsTimeLimited: () => boolean = () => this.mode.includes("time-limit");
+
+    getIsMoveLimited: () => boolean = () => this.mode.includes("move-limit");
+
+    getIsScoreRateLimited: () => boolean = () =>
+        this.mode.includes("score-rate");
+
+    getIsMoveRateLimited: () => boolean = () => this.mode.includes("move-rate");
+
     getLimiters: () => GameLimitersType = () => this.limiters;
+
+    getTimeLimit: () => number | false = () => this.limiters.timeLimit ?? false;
+
+    getMoveLimit: () => number | false = () => this.limiters.moveLimit ?? false;
+
+    getScoreRateLimit: () => GameRateLimiterType | false = () =>
+        this.limiters.scoreRate ?? false;
+
+    getMoveRateLimit: () => GameRateLimiterType | false = () =>
+        this.limiters.moveRate ?? false;
+
     getTimeElapsed: () => number = () => this.timeElapsed;
+
     getIsRunning: () => boolean = () => this.isRunning;
+
     getHasStarted: () => boolean = () => this.hasStarted;
+
     getGameStartTime: () => Date | undefined = () => this.gameStartTime;
+
     getGameEndTime: () => Date | undefined = () => this.gameEndTime;
+
     getSpeed: () => number = () => this.speed;
+
     getMovesMade: () => number = () => this.movesMade ?? 0;
+
     getOptions: () => string[] = () => this.options ?? [];
+
     getIsOptionsVisible: () => boolean = () => this.isOptionsVisible ?? false;
+
     getGameHistory: () => GameMoveType[] = () => this.gameHistory;
 }
 
