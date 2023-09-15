@@ -22,8 +22,8 @@ class GCS implements GCSType {
     protected timeElapsed: number;
     protected isRunning: boolean;
     protected hasStarted: boolean;
-    protected gameStartTime: string | Date | undefined;
-    protected gameEndTime: string | Date | undefined;
+    protected gameStartTime: Date | undefined;
+    protected gameEndTime: Date | undefined;
     protected speed: number;
     protected movesMade?: number;
     protected options?: string[];
@@ -150,6 +150,22 @@ class GCS implements GCSType {
     hasGameEnded: () => boolean = () =>
         this.hasStarted &&
         (this.winCheckCallback() || this.loseCheckCallback());
+
+    // Object getters
+    getProgression: () => GameProgressionType = () => this.progression;
+    getScore: () => number = () => this.score;
+    getMode: () => GameModesType[] = () => this.mode;
+    getLimiters: () => GameLimitersType = () => this.limiters;
+    getTimeElapsed: () => number = () => this.timeElapsed;
+    getIsRunning: () => boolean = () => this.isRunning;
+    getHasStarted: () => boolean = () => this.hasStarted;
+    getGameStartTime: () => Date | undefined = () => this.gameStartTime;
+    getGameEndTime: () => Date | undefined = () => this.gameEndTime;
+    getSpeed: () => number = () => this.speed;
+    getMovesMade: () => number = () => this.movesMade ?? 0;
+    getOptions: () => string[] = () => this.options ?? [];
+    getIsOptionsVisible: () => boolean = () => this.isOptionsVisible ?? false;
+    getGameHistory: () => GameMoveType[] = () => this.gameHistory;
 }
 
 export default GCS;

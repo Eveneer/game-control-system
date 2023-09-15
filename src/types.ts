@@ -58,18 +58,18 @@ export interface GCSFunctionsType {
 export interface GCSGetterFuncstionsType {
     getProgression: () => GameProgressionType;
     getScore: () => number;
-    getMode: () => GameLimitersType;
-    getLimiters: () => GameModesType[];
+    getMode: () => GameModesType[];
+    getLimiters: () => GameLimitersType;
     getTimeElapsed: () => number;
-    getIsRunning: () => number;
-    getHasStarted: () => GameMoveType[];
-    getGameStartTime: () => string[];
-    getGameEndTime: () => boolean;
+    getIsRunning: () => boolean;
+    getHasStarted: () => boolean;
+    getGameStartTime: () => Date | undefined;
+    getGameEndTime: () => Date | undefined;
     getSpeed: () => number;
-    getMovesMade: () => boolean;
-    getOptions: () => boolean;
-    getIsOptionsVisible: () => Date | undefined;
-    getGameHistory: () => Date | undefined;
+    getMovesMade: () => number;
+    getOptions: () => string[];
+    getIsOptionsVisible: () => boolean;
+    getGameHistory: () => GameMoveType[];
 }
 
 export interface GCSConstructorObjectType {
@@ -82,11 +82,11 @@ export interface GCSConstructorObjectType {
     options?: string[];
     isOptionsVisible?: boolean;
     speed?: number;
-    gameStartTime?: string | Date | undefined;
+    gameStartTime?: Date | undefined;
     winCheckCallback: () => boolean;
     loseCheckCallback: () => boolean;
     gameStateCallback: () => any;
     gameStateProgressionCallback: () => void;
 }
 
-export interface GCSType extends GCSFunctionsType {}
+export interface GCSType extends GCSFunctionsType, GCSGetterFuncstionsType {}
