@@ -6,6 +6,11 @@ export type GameModesType =
     | "score-rate" // A game mode where a score rate has to be maintained (scores per unit time)
     | "move-rate"; // A game mode where a move rate has to be maintained (moves per unit time)
 
+export interface GameRateLimiterType {
+    value: number;
+    unitTime: number;
+}
+
 export interface GameMoveType {
     score: number;
     moves: number;
@@ -16,8 +21,8 @@ export interface GameMoveType {
 export interface GameLimitersType {
     timeLimit?: number;
     moveLimit?: number;
-    scoreRate?: number;
-    moveRate?: number;
+    scoreRate?: GameRateLimiterType;
+    moveRate?: GameRateLimiterType;
 }
 
 export interface GCSPropertiesType {
@@ -75,7 +80,7 @@ export interface GCSGetterFuncstionsType {
 export interface GCSConstructorObjectType {
     progression: GameProgressionType;
     score?: number;
-    limiters: GameLimitersType;
+    limiters?: GameLimitersType;
     timeElapsed?: number;
     movesMade?: number;
     gameHistory?: GameMoveType[];
