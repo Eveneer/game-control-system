@@ -17,4 +17,6 @@ yarn add game-control-system
 ## Usage
 
 To use the control system in a game, you must first instantiate an object of the `GCS` class with `GCSConstructorObjectType` object as the param.
-Read the [Instantiation Instructions File](Instantiation%20Instructions.md) to learn about how to instantiate the object
+
+-   [How to instantiate `GCS`](Instantiation%20Instructions.md)
+-   [Available getter functions](Getter%20Functions.md)
