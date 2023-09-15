@@ -6,9 +6,6 @@ import type {
     GCSConstructorObjectType,
     GameLimitersType,
 } from "./types";
-// import { gcsInstantiationMixin } from "./gcsInstantiationMixin";
-// import { gcsFunctionalitiesMixin } from "./gcsFunctionalitiesMixin";
-// import { gcsSettersMixin } from "./gcsSettersMixin";
 
 const gameLimiters: any = {
     timeLimit: "time-limit",
@@ -88,15 +85,6 @@ class GCS implements GCSType {
         });
 
         this.mode = mode;
-
-        // Object.assign(
-        //     this,
-        //     gcsInstantiationMixin,
-        //     gcsFunctionalitiesMixin,
-        //     gcsSettersMixin
-        // );
-
-        // gcsInstantiationMixin.instanciate(param);
     }
 
     startGame: () => void = () => {
