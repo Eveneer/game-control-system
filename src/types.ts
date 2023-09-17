@@ -32,7 +32,7 @@ export interface GCSPropertiesType {
     mode: GameModesType[];
     timeElapsed: number;
     movesMade?: number;
-    gameHistory?: GameMoveType[];
+    gameHistory: GameMoveType[];
     options?: string[];
     isOptionsVisible?: boolean;
     speed: number;
@@ -40,6 +40,10 @@ export interface GCSPropertiesType {
     hasStarted: boolean;
     gameStartTime: Date | undefined;
     gameEndTime: Date | undefined;
+    scoreTimeLimit: Date | undefined;
+    scoreRateComparisonPoint: number;
+    moveRateComparisonPoint: number;
+    moveTimeLimit: Date | undefined;
     winCheckCallback: () => boolean;
     loseCheckCallback: () => boolean;
     gameStateCallback: () => any;
@@ -58,6 +62,12 @@ export interface GCSFunctionsType {
     recordState: () => void;
     toggleOptionsVisibility: () => void;
     hasGameEnded: () => boolean;
+    isMoveLimitCompliant: () => boolean;
+    isTimeLimitCompliant: () => boolean;
+    isScoreRateCompliant: () => boolean;
+    isMoveRateCompliant: () => boolean;
+    hasWon: () => boolean;
+    hasLost: () => boolean;
 }
 
 export interface GCSGetterFuncstionsType {

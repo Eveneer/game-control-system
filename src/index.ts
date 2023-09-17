@@ -30,6 +30,10 @@ class GCS implements GCSType {
     protected options?: string[];
     protected isOptionsVisible?: boolean;
     protected gameHistory: GameMoveType[];
+    protected scoreTimeLimit: Date | undefined;
+    protected moveTimeLimit: Date | undefined;
+    protected scoreRateComparisonPoint: number;
+    protected moveRateComparisonPoint: number;
     protected winCheckCallback: () => boolean;
     protected loseCheckCallback: () => boolean;
     protected gameStateCallback: () => any;
@@ -60,6 +64,8 @@ class GCS implements GCSType {
         this.gameHistory = gameHistory;
         this.timeElapsed = timeElapsed;
         this.speed = speed;
+        this.scoreTimeLimit = undefined;
+        this.moveTimeLimit = undefined;
         this.winCheckCallback = winCheckCallback;
         this.loseCheckCallback = loseCheckCallback;
         this.gameStateCallback = gameStateCallback;
@@ -67,6 +73,8 @@ class GCS implements GCSType {
         this.limiters = limiters;
         this.isOptionsVisible = isOptionsVisible;
         let mode: GameModesType[] = [];
+        this.scoreRateComparisonPoint = 0;
+        this.moveRateComparisonPoint = 0;
 
         if (this.progression === "time-based" && !speed)
             throw new Error(
@@ -93,6 +101,18 @@ class GCS implements GCSType {
         this.hasStarted = true;
         this.isOptionsVisible = false;
         this.gameStartTime = new Date();
+
+        if (this.limiters.scoreRate)
+            this.scoreTimeLimit = new Date(
+                this.gameStartTime.getTime() + this.limiters.scoreRate?.unitTime
+            );
+
+        if (this.limiters.moveRate)
+            this.scoreTimeLimit = new Date(
+                this.gameStartTime.getTime() + this.limiters.moveRate?.unitTime
+            );
+
+        this.recordState();
         this.progressGame();
     };
 
@@ -148,9 +168,95 @@ class GCS implements GCSType {
         }
     };
 
+    canProgress: () => boolean = () => {
+        return (
+            this.hasStarted &&
+            this.isRunning &&
+            !this.hasWon() &&
+            !this.hasLost() &&
+            this.isMoveLimitCompliant() &&
+            this.isTimeLimitCompliant() &&
+            this.isScoreRateCompliant() &&
+            this.isMoveRateCompliant()
+        );
+    };
+
     hasGameEnded: () => boolean = () =>
         this.hasStarted &&
         (this.winCheckCallback() || this.loseCheckCallback());
+
+    isMoveLimitCompliant: () => boolean = () =>
+        this.limiters.moveLimit && this.movesMade
+            ? this.movesMade <= this.limiters.moveLimit
+            : true;
+
+    isTimeLimitCompliant: () => boolean = () =>
+        this.limiters.timeLimit && this.timeElapsed
+            ? this.timeElapsed <= this.limiters.timeLimit
+            : true;
+
+    isScoreRateCompliant: () => boolean = () => {
+        let isCompliant: boolean = true;
+
+        if (this.limiters.scoreRate && this.scoreTimeLimit) {
+            isCompliant = false;
+            let lastState: GameMoveType | undefined = this.getLastGameState();
+            let compareState: GameMoveType | undefined =
+                this.gameHistory[this.scoreRateComparisonPoint];
+
+            if (lastState && compareState && this.scoreTimeLimit) {
+                if (
+                    lastState.score >=
+                        compareState.score + this.limiters.scoreRate.value &&
+                    this.scoreTimeLimit >= new Date()
+                ) {
+                    this.scoreRateComparisonPoint = this.gameHistory.length - 1;
+                    this.scoreTimeLimit = new Date(
+                        this.limiters.scoreRate.unitTime + new Date().getTime()
+                    );
+                    isCompliant = true;
+                }
+            }
+        }
+
+        return isCompliant;
+    };
+
+    isMoveRateCompliant: () => boolean = () => {
+        let isCompliant: boolean = true;
+
+        if (this.limiters.moveRate && this.moveTimeLimit) {
+            isCompliant = false;
+            let lastState: GameMoveType | undefined = this.getLastGameState();
+            let compareState: GameMoveType | undefined =
+                this.gameHistory[this.moveRateComparisonPoint];
+
+            if (lastState && compareState && this.moveTimeLimit) {
+                if (
+                    lastState.score >=
+                        compareState.score + this.limiters.moveRate.value &&
+                    this.moveTimeLimit >= new Date()
+                ) {
+                    this.moveRateComparisonPoint = this.gameHistory.length - 1;
+                    this.moveTimeLimit = new Date(
+                        this.limiters.moveRate.unitTime + new Date().getTime()
+                    );
+                }
+                isCompliant = true;
+            }
+        }
+
+        return isCompliant;
+    };
+
+    hasWon: () => boolean = () =>
+        this.winCheckCallback() &&
+        this.isMoveLimitCompliant() &&
+        this.isTimeLimitCompliant() &&
+        this.isScoreRateCompliant() &&
+        this.isMoveRateCompliant();
+
+    hasLost: () => boolean = () => false;
 
     // Object getters
     getProgression: () => GameProgressionType = () => this.progression;
@@ -199,6 +305,9 @@ class GCS implements GCSType {
     getIsOptionsVisible: () => boolean = () => this.isOptionsVisible ?? false;
 
     getGameHistory: () => GameMoveType[] = () => this.gameHistory;
+
+    getLastGameState: () => GameMoveType | undefined = () =>
+        this.gameHistory[this.gameHistory.length - 1];
 }
 
 export default GCS;
