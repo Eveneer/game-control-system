@@ -155,6 +155,46 @@ class GCS implements GCSType {
             moves: this.movesMade ?? 0,
             gameState: this.gameStateCallback(),
         });
+
+        let lastState: GameMoveType | undefined = this.getLastGameState();
+        let scoreCompareState: GameMoveType | undefined =
+            this.gameHistory[this.scoreRateComparisonPoint];
+        let moveCompareState: GameMoveType | undefined =
+            this.gameHistory[this.moveRateComparisonPoint];
+
+        if (
+            this.limiters.scoreRate &&
+            lastState &&
+            scoreCompareState &&
+            this.scoreTimeLimit
+        ) {
+            if (
+                lastState.score >=
+                scoreCompareState.score + this.limiters.scoreRate.value
+            ) {
+                this.scoreRateComparisonPoint = this.gameHistory.length - 1;
+                this.scoreTimeLimit = new Date(
+                    this.limiters.scoreRate.unitTime + new Date().getTime()
+                );
+            }
+        }
+
+        if (
+            this.limiters.moveRate &&
+            lastState &&
+            moveCompareState &&
+            this.moveTimeLimit
+        ) {
+            if (
+                lastState.moves >=
+                moveCompareState.moves + this.limiters.moveRate.value
+            ) {
+                this.moveRateComparisonPoint = this.gameHistory.length - 1;
+                this.moveTimeLimit = new Date(
+                    this.limiters.moveRate.unitTime + new Date().getTime()
+                );
+            }
+        }
     };
 
     toggleOptionsVisibility: () => void = () => {
@@ -195,59 +235,11 @@ class GCS implements GCSType {
             ? this.timeElapsed <= this.limiters.timeLimit
             : true;
 
-    isScoreRateCompliant: () => boolean = () => {
-        let isCompliant: boolean = true;
+    isScoreRateCompliant: () => boolean = () =>
+        this.scoreTimeLimit ? this.scoreTimeLimit >= new Date() : true;
 
-        if (this.limiters.scoreRate && this.scoreTimeLimit) {
-            isCompliant = false;
-            let lastState: GameMoveType | undefined = this.getLastGameState();
-            let compareState: GameMoveType | undefined =
-                this.gameHistory[this.scoreRateComparisonPoint];
-
-            if (lastState && compareState && this.scoreTimeLimit) {
-                if (
-                    lastState.score >=
-                        compareState.score + this.limiters.scoreRate.value &&
-                    this.scoreTimeLimit >= new Date()
-                ) {
-                    this.scoreRateComparisonPoint = this.gameHistory.length - 1;
-                    this.scoreTimeLimit = new Date(
-                        this.limiters.scoreRate.unitTime + new Date().getTime()
-                    );
-                    isCompliant = true;
-                }
-            }
-        }
-
-        return isCompliant;
-    };
-
-    isMoveRateCompliant: () => boolean = () => {
-        let isCompliant: boolean = true;
-
-        if (this.limiters.moveRate && this.moveTimeLimit) {
-            isCompliant = false;
-            let lastState: GameMoveType | undefined = this.getLastGameState();
-            let compareState: GameMoveType | undefined =
-                this.gameHistory[this.moveRateComparisonPoint];
-
-            if (lastState && compareState && this.moveTimeLimit) {
-                if (
-                    lastState.score >=
-                        compareState.score + this.limiters.moveRate.value &&
-                    this.moveTimeLimit >= new Date()
-                ) {
-                    this.moveRateComparisonPoint = this.gameHistory.length - 1;
-                    this.moveTimeLimit = new Date(
-                        this.limiters.moveRate.unitTime + new Date().getTime()
-                    );
-                }
-                isCompliant = true;
-            }
-        }
-
-        return isCompliant;
-    };
+    isMoveRateCompliant: () => boolean = () =>
+        this.moveTimeLimit ? this.moveTimeLimit >= new Date() : true;
 
     hasWon: () => boolean = () =>
         this.winCheckCallback() &&
