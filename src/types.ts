@@ -25,6 +25,11 @@ export interface GameLimitersType {
     moveRate?: GameRateLimiterType;
 }
 
+export interface GamePausesType {
+    pausedAt: Date;
+    unpausedAt: Date | undefined;
+}
+
 export interface GCSPropertiesType {
     progression: GameProgressionType;
     score: number;
@@ -85,8 +90,8 @@ export interface GCSGetterFuncstionsType {
     getScoreRateLimit: () => GameRateLimiterType | false;
     getMoveRateLimit: () => GameRateLimiterType | false;
     getTimeElapsed: () => number;
-    getIsRunning: () => boolean;
-    getHasStarted: () => boolean;
+    isRunning: () => boolean;
+    hasStarted: () => boolean;
     getGameStartTime: () => Date | undefined;
     getGameEndTime: () => Date | undefined;
     getSpeed: () => number;

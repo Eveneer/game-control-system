@@ -6,6 +6,7 @@ import type {
     GCSConstructorObjectType,
     GameLimitersType,
     GameRateLimiterType,
+    GamePausesType,
 } from "./types";
 
 const gameLimiters: any = {
@@ -21,8 +22,6 @@ class GCS implements GCSType {
     protected mode: GameModesType[];
     protected limiters: GameLimitersType;
     protected timeElapsed: number;
-    protected isRunning: boolean;
-    protected hasStarted: boolean;
     protected gameStartTime: Date | undefined;
     protected gameEndTime: Date | undefined;
     protected speed: number;
@@ -34,6 +33,7 @@ class GCS implements GCSType {
     protected moveTimeLimit: Date | undefined;
     protected sRCP: number;
     protected mRCP: number;
+    protected pauses: GamePausesType[];
     protected winCheckCallback: () => boolean;
     protected loseCheckCallback: () => boolean;
     protected gameStateCallback: () => any;
@@ -57,8 +57,6 @@ class GCS implements GCSType {
     }: GCSConstructorObjectType) {
         this.progression = progression;
         this.score = score;
-        this.isRunning = false;
-        this.hasStarted = false;
         this.gameStartTime = gameStartTime;
         this.gameEndTime = undefined;
         this.gameHistory = gameHistory;
@@ -75,6 +73,7 @@ class GCS implements GCSType {
         let mode: GameModesType[] = [];
         this.sRCP = 0;
         this.mRCP = 0;
+        this.pauses = [];
 
         if (this.progression === "time-based" && !speed)
             throw new Error(
@@ -97,8 +96,6 @@ class GCS implements GCSType {
     }
 
     startGame: () => void = () => {
-        this.isRunning = true;
-        this.hasStarted = true;
         this.isOptionsVisible = false;
         this.gameStartTime = new Date();
 
@@ -117,23 +114,38 @@ class GCS implements GCSType {
     };
 
     pauseGame: () => void = () => {
-        if (this.hasStarted) {
-            this.isRunning = false;
-        }
+        let isPauseable: boolean = this.hasStarted() && this.isRunning();
+        const lastPause: GamePausesType | undefined =
+            this.pauses[this.pauses.length - 1];
+
+        if (lastPause)
+            isPauseable = isPauseable && lastPause.unpausedAt !== undefined;
+
+        if (isPauseable)
+            this.pauses.push({
+                pausedAt: new Date(),
+                unpausedAt: undefined,
+            });
     };
 
     unpauseGame: () => void = () => {
-        if (this.hasStarted) {
-            this.isRunning = true;
-        }
+        const lastPause: GamePausesType | undefined =
+            this.pauses[this.pauses.length - 1];
+        let isUnpauseable: boolean =
+            this.hasStarted() && !this.isRunning() && lastPause !== undefined;
+
+        if (lastPause)
+            isUnpauseable = isUnpauseable && lastPause.unpausedAt === undefined;
+
+        if (isUnpauseable && lastPause) lastPause.unpausedAt = new Date();
     };
 
-    isPaused: () => boolean = () => this.hasStarted && !this.isRunning;
+    isPaused: () => boolean = () => this.hasStarted() && !this.isRunning();
 
     progressGame: () => boolean = () => {
         if (
             !this.hasStarted ||
-            !this.isRunning ||
+            !this.isRunning() ||
             this.loseCheckCallback() ||
             this.winCheckCallback() ||
             this.gameEndTime
@@ -192,14 +204,13 @@ class GCS implements GCSType {
     endGame: () => void = () => {
         if (this.gameEndTime) {
             this.gameEndTime = new Date();
-            this.isRunning = false;
         }
     };
 
     canProgress: () => boolean = () => {
         return (
-            this.hasStarted &&
-            this.isRunning &&
+            this.hasStarted() &&
+            this.isRunning() &&
             !this.hasWon() &&
             !this.hasLost() &&
             this.isMoveLimitCompliant() &&
@@ -210,7 +221,7 @@ class GCS implements GCSType {
     };
 
     hasGameEnded: () => boolean = () =>
-        this.hasStarted &&
+        this.hasStarted() &&
         (this.winCheckCallback() || this.loseCheckCallback());
 
     isMoveLimitCompliant: () => boolean = () =>
@@ -267,11 +278,40 @@ class GCS implements GCSType {
     getMoveRateLimit: () => GameRateLimiterType | false = () =>
         this.limiters.moveRate ?? false;
 
-    getTimeElapsed: () => number = () => this.timeElapsed;
+    getTimeElapsed: () => number = () => {
+        if (this.gameStartTime) {
+            const upperLim: Date = this.gameEndTime ?? new Date();
+            let timeElapsed: number =
+                upperLim.getTime() - this.gameStartTime.getTime();
 
-    getIsRunning: () => boolean = () => this.isRunning;
+            for (let pause of this.pauses) {
+                if (pause.unpausedAt) {
+                    timeElapsed -=
+                        pause.unpausedAt.getTime() - pause.pausedAt.getTime();
+                } else {
+                    timeElapsed -=
+                        upperLim.getTime() - pause.pausedAt.getTime();
+                }
+            }
 
-    getHasStarted: () => boolean = () => this.hasStarted;
+            return timeElapsed;
+        }
+
+        return 0;
+    };
+
+    isRunning: () => boolean = () => {
+        const lastPause: GamePausesType | undefined =
+            this.pauses[this.pauses.length - 1];
+        let isRunning: boolean = this.hasStarted();
+
+        if (lastPause !== undefined)
+            isRunning = isRunning && lastPause.unpausedAt !== undefined;
+
+        return isRunning;
+    };
+
+    hasStarted: () => boolean = () => this.gameStartTime !== undefined;
 
     getGameStartTime: () => Date | undefined = () => this.gameStartTime;
 
@@ -305,21 +345,17 @@ class GCS implements GCSType {
     updateLimiters: (updatedLimiters: GameLimitersType) => void = (
         updatedLimiters
     ) => {
-        if (updatedLimiters.moveLimit && this.limiters.moveLimit) {
+        if (updatedLimiters.moveLimit && this.limiters.moveLimit)
             this.limiters.moveLimit = updatedLimiters.moveLimit;
-        }
 
-        if (updatedLimiters.timeLimit && this.limiters.timeLimit) {
+        if (updatedLimiters.timeLimit && this.limiters.timeLimit)
             this.limiters.timeLimit = updatedLimiters.timeLimit;
-        }
 
-        if (updatedLimiters.scoreRate && this.limiters.scoreRate) {
+        if (updatedLimiters.scoreRate && this.limiters.scoreRate)
             this.limiters.scoreRate = updatedLimiters.scoreRate;
-        }
 
-        if (updatedLimiters.moveRate && this.limiters.moveRate) {
+        if (updatedLimiters.moveRate && this.limiters.moveRate)
             this.limiters.moveRate = updatedLimiters.moveRate;
-        }
     };
 }
 
