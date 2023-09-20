@@ -2,55 +2,55 @@
 
 While all the properties in the `GCS` object are protected, you would be able to read the propery values using these functions:
 
--   `getProgression: () => "time-based" | "move-based";`
+-   `gameProgression: () => "time-based" | "move-based";`
 
     -   Returns the progression type of the game
 
--   `getScore: () => number;`
+-   `currentScore: () => number;`
 
     -   Returns the current score of the game
 
--   `getMode: () => GameModesType[];`
+-   `gameMode: () => GameModesType[];`
 
     -   Returns the game play modes applied on the game
 
--   `getIsTimeLimited: () => boolean;`
+-   `isTimeLimited: () => boolean;`
 
     -   Returns if the game play has a time limit,
 
--   `getIsMoveLimited: () => boolean;`
+-   `isMoveLimited: () => boolean;`
 
     -   Returns if the game play has a move limit
 
--   `getIsScoreRateLimited: () => boolean;`
+-   `isScoreRateLimited: () => boolean;`
 
     -   Returns if the game play has a score rate limit
 
--   `getIsMoveRateLimited: () => boolean;`
+-   `isMoveRateLimited: () => boolean;`
 
     -   Returns if the game play has a move rate limit
 
--   `getLimiters: () => GameLimitersType;`
+-   `gameLimiters: () => GameLimitersType;`
 
     -   Returns all the limiters applied on the game
 
--   `getTimeLimit: () => number | false;`
+-   `gameTimeLimit: () => number | false;`
 
     -   Returns the time limit in ms if there is a time limit, else returns false
 
--   `getMoveLimit: () => number | false;`
+-   `gameMoveLimit: () => number | false;`
 
     -   Returns the move limit in ms if there is a time limit, else returns false
 
--   `getScoreRateLimit: () => GameRateLimiterType | false;`
+-   `gameScoreRateLimit: () => GameRateLimiterType | false;`
 
     -   Returns the score rate limit in ms if there is a time limit, else returns false
 
--   `getMoveRateLimit: () => GameRateLimiterType | false;`
+-   `gameMoveRateLimit: () => GameRateLimiterType | false;`
 
     -   Returns the move rate limit in ms if there is a time limit, else returns false
 
--   `getTimeElapsed: () => number;`
+-   `timeElapsed: () => number;`
 
     -   Returns time elapsed in game play
 

@@ -21,7 +21,6 @@ class GCS implements GCSType {
     protected score: number;
     protected mode: GameModesType[];
     protected limiters: GameLimitersType;
-    protected timeElapsed: number;
     protected gameStartTime: Date | undefined;
     protected gameEndTime: Date | undefined;
     protected speed: number;
@@ -43,7 +42,6 @@ class GCS implements GCSType {
         progression,
         score = 0,
         limiters = {},
-        timeElapsed = 0,
         gameStartTime,
         speed = 0,
         movesMade,
@@ -60,7 +58,6 @@ class GCS implements GCSType {
         this.gameStartTime = gameStartTime;
         this.gameEndTime = undefined;
         this.gameHistory = gameHistory;
-        this.timeElapsed = timeElapsed;
         this.speed = speed;
         this.scoreTimeLimit = undefined;
         this.moveTimeLimit = undefined;
@@ -230,8 +227,8 @@ class GCS implements GCSType {
             : true;
 
     isTimeLimitCompliant: () => boolean = () =>
-        this.limiters.timeLimit && this.timeElapsed
-            ? this.timeElapsed <= this.limiters.timeLimit
+        this.limiters.timeLimit && this.timeElapsed()
+            ? this.timeElapsed() <= this.limiters.timeLimit
             : true;
 
     isScoreRateCompliant: () => boolean = () =>
@@ -251,34 +248,35 @@ class GCS implements GCSType {
 
     // Object getters
 
-    getProgression: () => GameProgressionType = () => this.progression;
+    gameProgression: () => GameProgressionType = () => this.progression;
 
-    getScore: () => number = () => this.score;
+    currentScore: () => number = () => this.score;
 
-    getMode: () => GameModesType[] = () => this.mode;
+    gameMode: () => GameModesType[] = () => this.mode;
 
-    getIsTimeLimited: () => boolean = () => this.mode.includes("time-limit");
+    isTimeLimited: () => boolean = () => this.mode.includes("time-limit");
 
-    getIsMoveLimited: () => boolean = () => this.mode.includes("move-limit");
+    isMoveLimited: () => boolean = () => this.mode.includes("move-limit");
 
-    getIsScoreRateLimited: () => boolean = () =>
-        this.mode.includes("score-rate");
+    isScoreRateLimited: () => boolean = () => this.mode.includes("score-rate");
 
-    getIsMoveRateLimited: () => boolean = () => this.mode.includes("move-rate");
+    isMoveRateLimited: () => boolean = () => this.mode.includes("move-rate");
 
-    getLimiters: () => GameLimitersType = () => this.limiters;
+    gameLimiters: () => GameLimitersType = () => this.limiters;
 
-    getTimeLimit: () => number | false = () => this.limiters.timeLimit ?? false;
+    gameTimeLimit: () => number | false = () =>
+        this.limiters.timeLimit ?? false;
 
-    getMoveLimit: () => number | false = () => this.limiters.moveLimit ?? false;
+    gameMoveLimit: () => number | false = () =>
+        this.limiters.moveLimit ?? false;
 
-    getScoreRateLimit: () => GameRateLimiterType | false = () =>
+    gameScoreRateLimit: () => GameRateLimiterType | false = () =>
         this.limiters.scoreRate ?? false;
 
-    getMoveRateLimit: () => GameRateLimiterType | false = () =>
+    gameMoveRateLimit: () => GameRateLimiterType | false = () =>
         this.limiters.moveRate ?? false;
 
-    getTimeElapsed: () => number = () => {
+    timeElapsed: () => number = () => {
         if (this.gameStartTime) {
             const upperLim: Date = this.gameEndTime ?? new Date();
             let timeElapsed: number =

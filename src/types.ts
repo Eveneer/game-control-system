@@ -77,19 +77,19 @@ export interface GCSFunctionsType {
 }
 
 export interface GCSGetterFuncstionsType {
-    getProgression: () => GameProgressionType;
-    getScore: () => number;
-    getMode: () => GameModesType[];
-    getIsTimeLimited: () => boolean;
-    getIsMoveLimited: () => boolean;
-    getIsScoreRateLimited: () => boolean;
-    getIsMoveRateLimited: () => boolean;
-    getLimiters: () => GameLimitersType;
-    getTimeLimit: () => number | false;
-    getMoveLimit: () => number | false;
-    getScoreRateLimit: () => GameRateLimiterType | false;
-    getMoveRateLimit: () => GameRateLimiterType | false;
-    getTimeElapsed: () => number;
+    gameProgression: () => GameProgressionType;
+    currentScore: () => number;
+    gameMode: () => GameModesType[];
+    isTimeLimited: () => boolean;
+    isMoveLimited: () => boolean;
+    isScoreRateLimited: () => boolean;
+    isMoveRateLimited: () => boolean;
+    gameLimiters: () => GameLimitersType;
+    gameTimeLimit: () => number | false;
+    gameMoveLimit: () => number | false;
+    gameScoreRateLimit: () => GameRateLimiterType | false;
+    gameMoveRateLimit: () => GameRateLimiterType | false;
+    timeElapsed: () => number;
     isRunning: () => boolean;
     hasStarted: () => boolean;
     getGameStartTime: () => Date | undefined;
