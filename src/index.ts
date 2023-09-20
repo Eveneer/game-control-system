@@ -40,6 +40,7 @@ class GCS implements GCSType {
 
     constructor({
         progression,
+        pauses,
         score = 0,
         limiters = {},
         gameStartTime,
@@ -70,7 +71,7 @@ class GCS implements GCSType {
         let mode: GameModesType[] = [];
         this.sRCP = 0;
         this.mRCP = 0;
-        this.pauses = [];
+        this.pauses = pauses ?? [];
 
         if (this.progression === "time-based" && !speed)
             throw new Error(
@@ -246,6 +247,9 @@ class GCS implements GCSType {
 
     hasLost: () => boolean = () => false;
 
+
+
+    
     // Object getters
 
     gameProgression: () => GameProgressionType = () => this.progression;
@@ -328,6 +332,10 @@ class GCS implements GCSType {
     getScoreTimeLimit: () => Date | undefined = () => this.scoreTimeLimit;
 
     getMoveTimeLimit: () => Date | undefined = () => this.moveTimeLimit;
+
+    getPauses: () => GamePausesType[] = () => this.pauses;
+
+
 
     // Object Setters
 

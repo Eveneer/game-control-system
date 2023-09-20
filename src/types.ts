@@ -101,10 +101,12 @@ export interface GCSGetterFuncstionsType {
     getGameHistory: () => GameMoveType[];
     getScoreTimeLimit: () => Date | undefined;
     getMoveTimeLimit: () => Date | undefined;
+    getPauses: () => GamePausesType[];
 }
 
 export interface GCSConstructorObjectType {
     progression: GameProgressionType;
+    pauses?: GamePausesType[];
     score?: number;
     limiters?: GameLimitersType;
     timeElapsed?: number;
