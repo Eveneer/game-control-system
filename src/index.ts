@@ -141,21 +141,16 @@ class GCS implements GCSType {
     isPaused: () => boolean = () => this.hasStarted() && !this.isRunning();
 
     progressGame: () => boolean = () => {
-        if (
-            !this.hasStarted ||
-            !this.isRunning() ||
-            this.loseCheckCallback() ||
-            this.winCheckCallback() ||
-            this.gameEndTime
-        ) {
+        const canProgress: boolean = this.canProgress();
+
+        if (!canProgress) {
             this.endGame();
-            return false;
+        } else {
+            this.gameStateProgressionCallback();
+            this.recordState();
         }
 
-        this.gameStateProgressionCallback();
-        this.recordState();
-
-        return true;
+        return canProgress;
     };
 
     recordState: () => void = () => {
@@ -205,18 +200,15 @@ class GCS implements GCSType {
         }
     };
 
-    canProgress: () => boolean = () => {
-        return (
-            this.hasStarted() &&
-            this.isRunning() &&
-            !this.hasWon() &&
-            !this.hasLost() &&
-            this.isMoveLimitCompliant() &&
-            this.isTimeLimitCompliant() &&
-            this.isScoreRateCompliant() &&
-            this.isMoveRateCompliant()
-        );
-    };
+    canProgress: () => boolean = () =>
+        this.hasStarted() &&
+        this.isRunning() &&
+        !this.hasWon() &&
+        !this.hasLost() &&
+        this.isMoveLimitCompliant() &&
+        this.isTimeLimitCompliant() &&
+        this.isScoreRateCompliant() &&
+        this.isMoveRateCompliant();
 
     hasGameEnded: () => boolean = () =>
         this.hasStarted() &&
@@ -247,9 +239,6 @@ class GCS implements GCSType {
 
     hasLost: () => boolean = () => false;
 
-
-
-    
     // Object getters
 
     gameProgression: () => GameProgressionType = () => this.progression;
@@ -334,8 +323,6 @@ class GCS implements GCSType {
     getMoveTimeLimit: () => Date | undefined = () => this.moveTimeLimit;
 
     getPauses: () => GamePausesType[] = () => this.pauses;
-
-
 
     // Object Setters
 
