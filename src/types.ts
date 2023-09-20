@@ -41,8 +41,8 @@ export interface GCSPropertiesType {
     gameStartTime: Date | undefined;
     gameEndTime: Date | undefined;
     scoreTimeLimit: Date | undefined;
-    scoreRateComparisonPoint: number;
-    moveRateComparisonPoint: number;
+    sRCP: number;
+    mRCP: number;
     moveTimeLimit: Date | undefined;
     winCheckCallback: () => boolean;
     loseCheckCallback: () => boolean;
@@ -55,8 +55,8 @@ export interface GCSFunctionsType {
     pauseGame: () => void;
     unpauseGame: () => void;
     endGame: () => void;
-    // incrementScore: (val: number) => void;
-    // decrementScore: (val: number) => void;
+    updateScore: (val: number) => void;
+    updateMoves: (val: number) => void;
     isPaused: () => boolean;
     progressGame: () => boolean;
     recordState: () => void;
@@ -93,6 +93,8 @@ export interface GCSGetterFuncstionsType {
     getOptions: () => string[];
     getIsOptionsVisible: () => boolean;
     getGameHistory: () => GameMoveType[];
+    getScoreTimeLimit: () => Date | undefined;
+    getMoveTimeLimit: () => Date | undefined;
 }
 
 export interface GCSConstructorObjectType {

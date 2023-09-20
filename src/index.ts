@@ -32,8 +32,8 @@ class GCS implements GCSType {
     protected gameHistory: GameMoveType[];
     protected scoreTimeLimit: Date | undefined;
     protected moveTimeLimit: Date | undefined;
-    protected scoreRateComparisonPoint: number;
-    protected moveRateComparisonPoint: number;
+    protected sRCP: number;
+    protected mRCP: number;
     protected winCheckCallback: () => boolean;
     protected loseCheckCallback: () => boolean;
     protected gameStateCallback: () => any;
@@ -73,8 +73,8 @@ class GCS implements GCSType {
         this.limiters = limiters;
         this.isOptionsVisible = isOptionsVisible;
         let mode: GameModesType[] = [];
-        this.scoreRateComparisonPoint = 0;
-        this.moveRateComparisonPoint = 0;
+        this.sRCP = 0;
+        this.mRCP = 0;
 
         if (this.progression === "time-based" && !speed)
             throw new Error(
@@ -149,47 +149,35 @@ class GCS implements GCSType {
     };
 
     recordState: () => void = () => {
-        this.gameHistory.push({
+        let lastState: GameMoveType = {
             score: this.score,
             time: new Date(),
             moves: this.movesMade ?? 0,
             gameState: this.gameStateCallback(),
-        });
+        };
 
-        let lastState: GameMoveType | undefined = this.getLastGameState();
-        let scoreCompareState: GameMoveType | undefined =
-            this.gameHistory[this.scoreRateComparisonPoint];
-        let moveCompareState: GameMoveType | undefined =
-            this.gameHistory[this.moveRateComparisonPoint];
+        this.gameHistory.push(lastState);
+        let sCompState: GameMoveType | undefined = this.gameHistory[this.sRCP];
+        let mCompState: GameMoveType | undefined = this.gameHistory[this.mRCP];
 
-        if (
-            this.limiters.scoreRate &&
-            lastState &&
-            scoreCompareState &&
-            this.scoreTimeLimit
-        ) {
+        if (this.limiters.scoreRate && sCompState && this.scoreTimeLimit) {
             if (
                 lastState.score >=
-                scoreCompareState.score + this.limiters.scoreRate.value
+                sCompState.score + this.limiters.scoreRate.value
             ) {
-                this.scoreRateComparisonPoint = this.gameHistory.length - 1;
+                this.sRCP = this.gameHistory.length - 1;
                 this.scoreTimeLimit = new Date(
                     this.limiters.scoreRate.unitTime + new Date().getTime()
                 );
             }
         }
 
-        if (
-            this.limiters.moveRate &&
-            lastState &&
-            moveCompareState &&
-            this.moveTimeLimit
-        ) {
+        if (this.limiters.moveRate && mCompState && this.moveTimeLimit) {
             if (
                 lastState.moves >=
-                moveCompareState.moves + this.limiters.moveRate.value
+                mCompState.moves + this.limiters.moveRate.value
             ) {
-                this.moveRateComparisonPoint = this.gameHistory.length - 1;
+                this.mRCP = this.gameHistory.length - 1;
                 this.moveTimeLimit = new Date(
                     this.limiters.moveRate.unitTime + new Date().getTime()
                 );
@@ -251,6 +239,7 @@ class GCS implements GCSType {
     hasLost: () => boolean = () => false;
 
     // Object getters
+
     getProgression: () => GameProgressionType = () => this.progression;
 
     getScore: () => number = () => this.score;
@@ -298,8 +287,20 @@ class GCS implements GCSType {
 
     getGameHistory: () => GameMoveType[] = () => this.gameHistory;
 
-    getLastGameState: () => GameMoveType | undefined = () =>
-        this.gameHistory[this.gameHistory.length - 1];
+    getScoreTimeLimit: () => Date | undefined = () => this.scoreTimeLimit;
+
+    getMoveTimeLimit: () => Date | undefined = () => this.moveTimeLimit;
+
+    // Object Setters
+
+    updateScore: (val: number) => void = (val) => {
+        this.score += val;
+    };
+    
+    updateMoves: (val: number) => void = (val) => {
+        this.movesMade ??= 0;
+        this.movesMade += val;
+    };
 }
 
 export default GCS;
