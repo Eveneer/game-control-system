@@ -296,10 +296,30 @@ class GCS implements GCSType {
     updateScore: (val: number) => void = (val) => {
         this.score += val;
     };
-    
+
     updateMoves: (val: number) => void = (val) => {
         this.movesMade ??= 0;
         this.movesMade += val;
+    };
+
+    updateLimiters: (updatedLimiters: GameLimitersType) => void = (
+        updatedLimiters
+    ) => {
+        if (updatedLimiters.moveLimit && this.limiters.moveLimit) {
+            this.limiters.moveLimit = updatedLimiters.moveLimit;
+        }
+
+        if (updatedLimiters.timeLimit && this.limiters.timeLimit) {
+            this.limiters.timeLimit = updatedLimiters.timeLimit;
+        }
+
+        if (updatedLimiters.scoreRate && this.limiters.scoreRate) {
+            this.limiters.scoreRate = updatedLimiters.scoreRate;
+        }
+
+        if (updatedLimiters.moveRate && this.limiters.moveRate) {
+            this.limiters.moveRate = updatedLimiters.moveRate;
+        }
     };
 }
 

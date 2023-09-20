@@ -57,6 +57,7 @@ export interface GCSFunctionsType {
     endGame: () => void;
     updateScore: (val: number) => void;
     updateMoves: (val: number) => void;
+    updateLimiters: (updatedLimiters: GameLimitersType) => void;
     isPaused: () => boolean;
     progressGame: () => boolean;
     recordState: () => void;
