@@ -60,8 +60,8 @@ export interface GCSFunctionsType {
     pauseGame: () => void;
     unpauseGame: () => void;
     endGame: () => void;
-    updateScore: (val: number) => void;
-    updateMoves: (val: number) => void;
+    updateScoreBy: (val: number) => void;
+    updateMovesBy: (val: number) => void;
     updateLimiters: (updatedLimiters: GameLimitersType) => void;
     isPaused: () => boolean;
     progressGame: () => boolean;
@@ -109,7 +109,6 @@ export interface GCSConstructorObjectType {
     pauses?: GamePausesType[];
     score?: number;
     limiters?: GameLimitersType;
-    timeElapsed?: number;
     movesMade?: number;
     gameHistory?: GameMoveType[];
     options?: string[];

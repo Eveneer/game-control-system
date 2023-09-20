@@ -326,11 +326,11 @@ class GCS implements GCSType {
 
     // Object Setters
 
-    updateScore: (val: number) => void = (val) => {
+    updateScoreBy: (val: number) => void = (val) => {
         this.score += val;
     };
 
-    updateMoves: (val: number) => void = (val) => {
+    updateMovesBy: (val: number) => void = (val) => {
         this.movesMade ??= 0;
         this.movesMade += val;
     };
