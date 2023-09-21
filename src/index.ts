@@ -336,19 +336,35 @@ class GCS implements GCSType {
     };
 
     updateLimiters: (updatedLimiters: GameLimitersType) => void = (
-        updatedLimiters
+        updatedLimiters = {}
     ) => {
-        if (updatedLimiters.moveLimit && this.limiters.moveLimit)
+        if (updatedLimiters.moveLimit && this.limiters.moveLimit) {
             this.limiters.moveLimit = updatedLimiters.moveLimit;
+        } else if (this.limiters.moveLimit && !updatedLimiters.moveLimit) {
+            delete this.limiters.moveLimit;
+        }
 
-        if (updatedLimiters.timeLimit && this.limiters.timeLimit)
+        if (updatedLimiters.timeLimit && this.limiters.timeLimit) {
             this.limiters.timeLimit = updatedLimiters.timeLimit;
+        } else if (this.limiters.timeLimit && !updatedLimiters.timeLimit) {
+            delete this.limiters.timeLimit;
+        }
 
-        if (updatedLimiters.scoreRate && this.limiters.scoreRate)
+        if (updatedLimiters.scoreRate && this.limiters.scoreRate) {
             this.limiters.scoreRate = updatedLimiters.scoreRate;
+        } else if (this.limiters.scoreRate && !updatedLimiters.scoreRate) {
+            delete this.limiters.scoreRate;
+        }
 
-        if (updatedLimiters.moveRate && this.limiters.moveRate)
+        if (updatedLimiters.moveRate && this.limiters.moveRate) {
             this.limiters.moveRate = updatedLimiters.moveRate;
+        } else if (this.limiters.moveRate && !updatedLimiters.moveRate) {
+            delete this.limiters.moveRate;
+        }
+    };
+
+    updateSpeed: (speed: number) => void = (speed) => {
+        if (this.progression === "time-based" && this.speed) this.speed = speed;
     };
 }
 
