@@ -20,8 +20,6 @@ To use the control system in a game, you must first instantiate an object of the
 ```ts
 import GCS from "game-control-system/dist";
 
-let gcs: GCS;
-
 const yourFunctionToCheckIfPlayerLost: () => boolean = () => {
     // Lose check logic
 };
@@ -50,7 +48,7 @@ const yourFunctionToProgressTheGameState: () => void = () => {
     gcs.progressGame();
 };
 
-gcs = new GCS({
+const gcs: GCS = new GCS({
     progression: "time-based",
     winCheckCallback: yourFunctionToCheckIfPlayerWon,
     loseCheckCallback: yourFunctionToCheckIfPlayerLost,
