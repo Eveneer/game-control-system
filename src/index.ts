@@ -237,7 +237,12 @@ class GCS implements GCSType {
         this.isScoreRateCompliant() &&
         this.isMoveRateCompliant();
 
-    hasLost: () => boolean = () => false;
+    hasLost: () => boolean = () =>
+        this.loseCheckCallback() ||
+        !this.isMoveLimitCompliant() ||
+        !this.isTimeLimitCompliant() ||
+        !this.isScoreRateCompliant() ||
+        !this.isMoveRateCompliant();
 
     // Object getters
 
